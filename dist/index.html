@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src='bundle.js'></script>
+</head>
+<body>
+  <form action='' method='post' enctype='multipart/form-data'>
+    <div id='Loader' style='width: 320px; height: 240px; border: dashed 1px #616161'>
+    </div>
+    <input type='file' multiple id='Files' />
+  </form>
+  <script>
+  window.onload = function () {
+    let drop = document.getElementById('Loader')
+    let input = document.getElementById('Files')
+
+    // ImageManagerで使うDOMをD&D，input[type=file]それぞれ渡す
+    let im = new ImageManager()
+    im.setDropZone(drop)
+    im.setInputForm(input)
+
+    // D&Dでファイルをロードした時の処理
+    im.onLoad = image => {
+      im.loadAsDataUrl(image, x => {
+        const base64 = x.target.result
+        // サムネ表示
+        const elem = document.createElement('img')
+        elem.src = base64
+        elem.width = 320
+        document.body.appendChild(elem)
+        // inputを生成
+        const input = document.createElement('input')
+        input.type='hidden'
+        input.value = base64
+        document.body.appendChild(input)
+      })
+    }
+
+    // D&Dで不正なファイルを受け取った時の処理
+    im.onInvalid = file => {
+      console.error([file.name, file.size + 'byte'].join(' : '))
+    }
+  };
+  </script>
+</body>
+</html>
